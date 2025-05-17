@@ -38,3 +38,12 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.logout = (req, res) => {
+  const token = req.token;
+  if (token) {
+    tokenBlacklist.add(token);
+    return res.json({ message: 'Successfully logged out' });
+  }
+  res.status(400).json({ message: 'No token provided' });
+};
