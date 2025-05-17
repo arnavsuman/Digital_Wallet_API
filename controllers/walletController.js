@@ -64,7 +64,7 @@ exports.withdraw = async (req, res) => {
     // Rule 2: 4 withdrawals within last 5 minutes
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
     const recentWithdrawals = await Transaction.find({
-      from: sender.username,
+      from: user._id,
       type: 'withdraw',
       timestamp: { $gte: fiveMinutesAgo }
     });
