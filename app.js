@@ -24,6 +24,7 @@ app.get('/', (req, res) => {
       <li><code>PATCH /api/wallet/delete</code> – Soft delete account</li>
       <li><code>DELETE /api/admin/users/hard-delete</code> – Admin only: Hard delete users</li>
     </ul>
+    <h1>Made by Arnav Suman</h1>
   `);
 });
 
