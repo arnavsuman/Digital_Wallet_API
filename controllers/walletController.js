@@ -85,7 +85,7 @@ exports.withdraw = async (req, res) => {
       console.log(`[FLAGGED] ${recentWithdrawals.length} withdrawal in 5 mins by ${user.username} at Time ${transaction.timestamp.toISOString()}`);
     }
 
-    res.json({ balance: user.balance, flagged });
+    res.json({ balance: user.balance, isFlagged });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
