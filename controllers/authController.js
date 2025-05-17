@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const tokenBlacklist = require('../utils/blacklist');
+
 
 exports.register = async (req, res) => {
   const { username, password } = req.body;
@@ -40,11 +40,4 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.logout = (req, res) => {
-  const token = req.token;
-  if (token) {
-    tokenBlacklist.add(token);
-    return res.json({ message: 'Successfully logged out' });
-  }
-  res.status(400).json({ message: 'No token provided' });
-};
+
