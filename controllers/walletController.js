@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Transaction = require('../models/Transaction');
 const { is } = require('type-is');
+const { sendFlaggedAlert } = require('../jobs/mailer');
 
 
 exports.deposit = async (req, res) => {
@@ -30,12 +31,11 @@ exports.deposit = async (req, res) => {
       flagged: isFlagged,
     });
     await transaction.save();
-
     // REPORTING LOGS
     if (amount > 5000000 || recent.length > 3) {
       console.log(`[FLAGGED] High-value withdrawal of ${amount} by ${user.username} at Time ${transaction.timestamp.toISOString()}`);
 
-      // send mail here
+      await sendFlaggedAlert(transaction);
     }
 
 
