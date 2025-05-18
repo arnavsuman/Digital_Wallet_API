@@ -35,7 +35,7 @@ exports.deposit = async (req, res) => {
     if (amount > 5000000 || recent.length > 3) {
       console.log(`[FLAGGED] High-value withdrawal of ${amount} by ${user.username} at Time ${transaction.timestamp.toISOString()}`);
 
-      await sendFlaggedAlert(transaction);
+      await sendFlaggedAlert(transaction);  // send email to admin for flagged transaction
     }
 
 
@@ -58,9 +58,6 @@ exports.withdraw = async (req, res) => {
     user.balance -= amount;
     await user.save();
 
-    // Rule 1: Large transfer
-    const isFlagged = amount > 5000000;
-
     // Rule 2: 4 withdrawals within last 5 minutes
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
     const recentWithdrawals = await Transaction.find({
@@ -68,6 +65,9 @@ exports.withdraw = async (req, res) => {
       type: 'withdraw',
       timestamp: { $gte: fiveMinutesAgo }
     });
+
+    // Rule 1: Large transfer
+    const isFlagged = (amount > 5000000) || (recentWithdrawals.length > 3);
 
     const transaction = new Transaction({
       type: 'withdraw',
@@ -83,6 +83,9 @@ exports.withdraw = async (req, res) => {
     }
     if (recentWithdrawals.length > 3) {
       console.log(`[FLAGGED] ${recentWithdrawals.length} withdrawal in 5 mins by ${user.username} at Time ${transaction.timestamp.toISOString()}`);
+    }
+    if(isFlagged){
+      await sendFlaggedAlert(transaction);
     }
 
     res.json({ balance: user.balance, isFlagged });
@@ -109,8 +112,6 @@ exports.transfer = async (req, res) => {
     await sender.save();
     await receiver.save();
 
-    // Rule 1: Large transfer
-    const isFlagged = amount > 5000000;
 
     // Rule 2: 4 withdrawals within last 5 minutes
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
@@ -120,6 +121,8 @@ exports.transfer = async (req, res) => {
       timestamp: { $gte: fiveMinutesAgo }
     });
 
+    // Rule 1: Large transfer
+    const isFlagged = (amount > 5000000) || (recentWithdrawals.length > 3);
     //WRITE TRANSACTION
 
     const transaction = new Transaction({
@@ -131,14 +134,18 @@ exports.transfer = async (req, res) => {
     });
     await transaction.save();
 
+    
+
     // REPORTING LOGS
 
-    if (isFlagged) {
-      console.log(`[FLAGGED] Large transfer flagged: ${amount} from ${sender.username} to ${receiver.username} at Time ${transaction.timestamp.toISOString()}`);
+    if (amount > 5000000) {
+      console.log(`[FLAGGED] High-value withdrawal of ${amount} by ${user.username} at Time ${transaction.timestamp.toISOString()}`);
     }
     if (recentWithdrawals.length > 3) {
-      isFlagged = true;
-      console.log(`[FLAGGED] ${recentWithdrawals.length} transfers in 5 mins by ${sender.username} to ${receiver.username} at Time ${transaction.timestamp.toISOString()}`);
+      console.log(`[FLAGGED] ${recentWithdrawals.length} withdrawal in 5 mins by ${user.username} at Time ${transaction.timestamp.toISOString()}`);
+    }
+    if(isFlagged){
+      await sendFlaggedAlert(transaction);
     }
 
     res.json({ balance: sender.balance });
