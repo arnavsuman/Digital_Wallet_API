@@ -49,7 +49,7 @@ cd digital-wallet-system
 
 ### 3. Set Up Environment Variables
 Create a .env file in the root directory and add the following:
-
+```nginx
 PORT=5000
 
 MONGO_URI=your_mongodb_atlas_connection_string
@@ -57,7 +57,7 @@ MONGO_URI=your_mongodb_atlas_connection_string
 JWT_SECRET=your_secret_key
 
 JWT_EXPIRY=1d
-
+```
 ### 4. Start the Server
    npm start
 By default, the server runs on http://localhost:5000
@@ -131,7 +131,7 @@ Returns all transactions in the system.
 
 # Postman Testing
 Use Postman to test the APIs by sending requests with:
-```json
+```nginx
 Content-Type: application/json
 
 Authorization: Bearer <your-token> (for protected routes)
