@@ -2,6 +2,8 @@
 
 A secure and scalable digital wallet backend system built using Node.js, Express.js, MongoDB (Atlas), and JWT for authentication. This application supports wallet operations such as registration, login, deposit, withdraw, transfer, transaction history, soft-delete, and admin fraud monitoring.
 
+Project DEmonstatation Video Link - 
+
 ## Features
 
 * User registration and login with JWT authentication
@@ -107,6 +109,9 @@ Authorization: Bearer <token>
 }
 ```
 ### GET /api/wallet/transactions
+```bash
+https://digital-wallet-api-53o8.onrender.com/api/auth/register
+```
 Returns an array of recent transactions for the logged-in user.
 
 ### GET /api/wallet/balance
@@ -115,7 +120,7 @@ Returns the current wallet balance.
 ### PATCH /api/wallet/delete
 Soft-deletes the user by setting a deleted flag.
 
-# Admin Routes
+# Admin Routes (JWT Protected)
 ### GET /api/admin/flagged
 Returns all flagged transactions (fraud or suspicious).
 
