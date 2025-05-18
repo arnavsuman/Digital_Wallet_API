@@ -64,7 +64,32 @@ JWT_EXPIRY=1d
    npm start
 By default, the server runs on http://localhost:5000
 
+# MONGODB SCHEMA
 
+User Scehma
+```nginx
+   username: { type: String, unique: true, required: true },
+  passwordHash: { type: String, required: true },
+  balance: { type: Number, default: 0, min: 0 },
+  role: { type: String, enum: ['user', 'admin'],  }, // for admin check
+  deleted: { type: Boolean, default: false } // soft delete flag
+
+```
+Transaction Schema
+```nginx
+  from: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false }, // null for deposit
+  to: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },   // null for withdraw
+  type: { type: String, enum: ['deposit', 'withdraw', 'transfer'], required: true },
+  amount: { type: Number, required: true, min: 0 },
+  timestamp: { type: Date, default: Date.now },
+  flagged: { type: Boolean, default: false }
+```
+
+Fraud Report Scehma
+```nginx
+   date: { type: Date, default: Date.now },
+   suspiciousTransactions: [transaction schema, transaction schema, transaction schema ......]
+```
 # API Authentication Routes
 
 ### POST /api/auth/register
@@ -204,8 +229,15 @@ https://digital-wallet-api-53o8.onrender.com/api/admin/hard-delete-users
 
 * Scheduled Scanning: A cron job (jobs/fraudScan.js) runs at intervals to detect patterns in recent transactions.
 
+# BONUS FEATURES
+* Daily fraud check at midnight
+* Soft Delete for users and Hard delete for admin using soft delete flag in user schema
+* Email alert for every flagged transaction to admin(for now) account owner/user (in future when email data being collected) using nodemailer and mailtrap for smtp server.
+     whenever a flag is generated at server the email also sent.
+
 # Postman Testing
 Use Postman to test the APIs by sending requests with:
+
 ```nginx
 Content-Type: application/json
 
